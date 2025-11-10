@@ -1,0 +1,325 @@
+//@version=5
+indicator('APE.X trade assist/ strategy builder', overlay=true, precision=2, shorttitle='APE.X trade assist/ strategy builder')
+TA = (true)
+instructions1 = input.bool (false,title ="🚦instructions _____________________________________________________________ set all alerts to 1hr _____________________________________________________________ make sure to enable: once per bar close _____________________________________________________________ any changes made to this should be carried over to other corresponding settings in other ape.x indicators")
+showbearvsbull = input.bool(false, title = "====>🤑 show dca  trading strategy and assist _____________________________________________________________ ENABLED signals ✅ _____________________________________________________________ DCA = DCA ENTRY /COLOR🟦/ _____________________________________________________________ dTP1 = DCA TAKE PROFIT 1 /COLOR🟦/ _____________________________________________________________ dTP2 = DCA TAKE PROFIT 2 /COLOR🟦/ _____________________________________________________________ dTP3 = DCA TAKE PROFIT 3 /COLOR🟦/ _____________________________________________________________ D❌ = DCA STOP LOSS /COLOR📰/")
+instructions3 = input.bool (false,title ="🚦instructions _____________________________________________________________ edit take profits and stop loss for dca ")
+stopPerDCA1 = input.float(10, title='DCA Stop Loss: %') * 0.01
+takePerDCA1 = input.float(6, title='DCA Take Profit 1') * 0.01
+takePerDCA2 = input.float(8, title='DCA Take Profit 2') * 0.01
+takePerDCA3 = input.float(15, title='DCATake Profit 3') * 0.01
+showpredictions = input.bool(true, title = "====>🤑 show Long/Short trading strategy and assist _____________________________________________________________ ENABLED signals ✅ _____________________________________________________________ L = LONG ENTRY /COLOR🟩/ _____________________________________________________________ S = SHORT ENTRY /COLOR🟥/ _____________________________________________________________ LTP1 = LONG TAKE PROFIT 1 /COLOR🟪/ _____________________________________________________________ LTP2 = LONG TAKE PROFIT 2 /COLOR🟪/ _____________________________________________________________ LTP3 = LONG TAKE PROFIT 3 /COLOR🟪/ _____________________________________________________________ STP1 = SHORT TAKE PROFIT 1 /COLOR🟨/ _____________________________________________________________ STP2 = SHORT TAKE PROFIT 2 /COLOR🟨/ _____________________________________________________________ STP3 = SHORT TAKE PROFIT 3 /COLOR🟨/ _____________________________________________________________ S❌ = SHORT STOP LOSS /COLOR📰/ _____________________________________________________________ L❌ = LONG STOP LOSS /COLOR📰/ _____________________________________________________________")
+instructions2 = input.bool (false,title ="🚦instructions _____________________________________________________________ edit take profits and stop losses for long/ short ")
+stopPerHR1 = input.float(10, title='APE.X Strategy Stop Loss: %') * 0.01
+takePerHR1 = input.float(6, title='APE.X Strategy Take Profit 1') * 0.01
+takePerHR2 = input.float(8, title='APE.X Strategy Take Profit 2') * 0.01
+takePerHR3 = input.float(15, title='APE.X Strategy Take Profit 3') * 0.01
+instructions4 = input.bool (false,title ="🚦instructions _____________________________________________________________ below you can edit long/short through gods trend and bull vs bear strategies _____________________________________________________________ below you can aslo edit dca strategy")
+GPbearvsbull = '===== edit bull versus bear strategy====='
+GP1thegods = '===== edit the gods trend strategy====='
+GPDOLLARCOSTAVERAGE = '===== Dollar Cost Average ====='
+on_symb = (true)
+A6 = (true)
+min_level = input.int(defval=36, title='Dollar cost average', minval=-100, group=GPDOLLARCOSTAVERAGE)
+length = input(10, group=GPDOLLARCOSTAVERAGE)
+mult =input(40, group=GPDOLLARCOSTAVERAGE)
+maj_qual = (6)
+maj_len = (30)
+min_qual = (5)
+min_len = (5)
+maj = true
+min = true
+buy_4 = 0.0
+upper_s = math.sum(volume * (ta.change(hlc3) <= 0 ? 0 : hlc3), 14)
+lower_s = math.sum(volume * (ta.change(hlc3) >= 0 ? 0 : hlc3), 14)
+xmf = 100.0 - 100.0 / (1.0 + upper_s / lower_s)
+basis = ta.sma(ohlc4, 25)
+dev = mult * ta.stdev(ohlc4, 25)
+upper = basis + dev
+lower = basis - dev
+OB1 = (upper + lower) / 2.0
+OB2 = upper - lower
+BollOsc = (ohlc4 - OB1) / OB2 * 100
+xrsi = ta.rsi(ohlc4, 14)
+calc_stoch(src38, length, smoothFastD) =>
+    ll3 = ta.lowest(low, length)
+    hh = ta.highest(high, length)
+    k = 100 * (src38 - ll3) / (hh - ll3)
+    ta.sma(k, smoothFastD)
+stoc = calc_stoch(ohlc4, 21, 3)
+trend23 = (xrsi + xmf + BollOsc + stoc / 3) / 2
+x = bar_index
+y = trend23
+x_ = ta.ema(x, length)
+y_ = ta.ema(y, length)
+mx = ta.stdev(x, length)
+my = ta.stdev(y, length)
+c23 = ta.correlation(x, y, length)
+slope = c23 * (my / mx)
+inter = y_ - slope * x_
+reg_trend23 = x * slope + inter
+lele(qual, len) =>
+    bindex = 0.0
+    sindex = 0.0
+    bindex := nz(bindex[1], 0)
+    sindex := nz(sindex[1], 0)
+    ret = 0
+    if close > close[4]
+        bindex += 1
+        bindex
+    if close < close[4]
+        sindex += 1
+        sindex
+    if bindex > qual and close < open and high >= ta.highest(high, len)
+        bindex := 0
+        ret := -1
+        ret
+    if sindex > qual and close > open and low <= ta.lowest(low, len)
+        sindex := 0
+        ret := 1
+        ret
+    return_1 = ret
+    return_1
+major = lele(maj_qual, maj_len)
+minor = lele(min_qual, min_len)
+a = 1
+cc = 10
+xATR = ta.atr(cc)
+nLoss = a * xATR
+src38 = close
+xATRTrailingStop = 0.0
+iff_2 = src38 > nz(xATRTrailingStop[1], 0) ? src38 - nLoss : src38 + nLoss
+iff_3 = src38 < nz(xATRTrailingStop[1], 0) and src38[1] < nz(xATRTrailingStop[1], 0) ? math.min(nz(xATRTrailingStop[1]), src38 + nLoss) : iff_2
+xATRTrailingStop := src38 > nz(xATRTrailingStop[1], 0) and src38[1] > nz(xATRTrailingStop[1], 0) ? math.max(nz(xATRTrailingStop[1]), src38 - nLoss) : iff_3
+pos = 0
+iff_4 = src38[1] > nz(xATRTrailingStop[1], 0) and src38 < nz(xATRTrailingStop[1], 0) ? -1 : nz(pos[1], 0)
+pos := src38[1] < nz(xATRTrailingStop[1], 0) and src38 > nz(xATRTrailingStop[1], 0) ? 1 : iff_4
+xcolor = pos == -1 ? color.red : pos == 1 ? color.green : color.blue
+ema = ta.ema(src38, 1)
+above = ta.crossover(ema, xATRTrailingStop)
+below = ta.crossover(xATRTrailingStop, ema)
+buy_a = src38 > xATRTrailingStop and above
+if ta.crossunder(reg_trend23, trend23) and reg_trend23 <= min_level and trend23 <= min_level and A6
+    buy_4 := 1
+    buy_4
+res5 = input.timeframe('2D', title = 'adjust bull vs bear calls', group= GPbearvsbull )
+o = request.security(syminfo.tickerid, res5, open, barmerge.gaps_off, barmerge.lookahead_on)
+c = request.security(syminfo.tickerid, res5, close, barmerge.gaps_off, barmerge.lookahead_on)
+hz = request.security(syminfo.tickerid, res5, high, barmerge.gaps_off, barmerge.lookahead_on)
+l = request.security(syminfo.tickerid, res5, low, barmerge.gaps_off, barmerge.lookahead_on)
+st_mult = input.float(0,title = 'adjust multiplier', group= GPbearvsbull)
+st_period = input.int(500,title = 'adjust intervals', group= GPbearvsbull)
+up_lev = l - st_mult * ta.atr(st_period)
+dn_lev = hz + st_mult * ta.atr(st_period)
+up_trend = 0.0
+up_trend := c[1] > up_trend[1] ? math.max(up_lev, up_trend[1]) : up_lev
+down_trend = 0.0
+down_trend := c[1] < down_trend[1] ? math.min(dn_lev, down_trend[1]) : dn_lev
+trend = 0
+trend := c > down_trend[1] ? 1 : c < up_trend[1] ? -1 : nz(trend[1], 1)
+st_line = trend == 1 ? up_trend : down_trend
+buy44 = ta.crossover(c, st_line)
+sell44 = ta.crossunder(c, st_line)
+bull_ht = buy44
+sell_ht = sell44
+src5 = (close)
+tf = input(1440, title = 'adjust the gods numbers', group=GP1thegods)
+len5 = timeframe.isintraday and timeframe.multiplier >= 1 ? tf / timeframe.multiplier * 7 : timeframe.isintraday and timeframe.multiplier < 60 ? 60 / timeframe.multiplier * 24 * 7 : 7
+ma32 = ta.ema(src5 * volume, len5) / ta.ema(volume, len5)
+src1 = ma32
+p(src1, len5) =>
+    n = 0.0
+    s = 0.0
+    for i = 0 to len5 - 1 by 1
+        w = (len5 - i) * len5
+        n += w
+        s += src5[i] * w
+        s
+    s / n
+hm = 2.0 * p(src1, math.floor(len5 / 2)) - p(src1, len5)
+vhma = p(hm, math.floor(math.sqrt(len5)))
+lineColor = vhma > vhma[1] ? color.lime : color.purple
+b2 = timeframe.isintraday and timeframe.multiplier >= 1 ? 60 / timeframe.multiplier * 7 : timeframe.isintraday and timeframe.multiplier < 60 ? 60 / timeframe.multiplier * 24 * 7 : 7
+res55 = input.timeframe('D', title = 'adjust the gods time frame', group=GP1thegods)
+oo = request.security(syminfo.tickerid, res55, open, barmerge.gaps_off, barmerge.lookahead_on)
+cc3 = request.security(syminfo.tickerid, res55, close, barmerge.gaps_off, barmerge.lookahead_on)
+hzz = request.security(syminfo.tickerid, res55, high, barmerge.gaps_off, barmerge.lookahead_on)
+ll = request.security(syminfo.tickerid, res55, low, barmerge.gaps_off, barmerge.lookahead_on)
+st_mult3 = input.float(0.05, title='edit division', minval=0.05, maxval=4, step=0.01 , group=GP1thegods)
+st_period4 = input.int(4, title='edit multitude factor', minval=1, group=GP1thegods)
+up_lev5 = ll - st_mult3 * ta.atr(st_period4)
+dn_lev5 = hzz + st_mult3 * ta.atr(st_period4)
+up_trend5 = 0.0
+up_trend5 := cc3[1] > up_trend5[1] ? math.max(up_lev5, up_trend5[1]) : up_lev5
+down_trend5 = 0.0
+down_trend5 := cc3[1] < down_trend5[1] ? math.min(dn_lev5, down_trend5[1]) : dn_lev5
+trend5 = 0
+trend5 := cc3 > down_trend5[1] ? 1 : cc3 < up_trend5[1] ? -1 : nz(trend5[1], 1)
+st_line5 = trend5 == 1 ? up_trend5 : down_trend5
+thegodsbuy = ta.crossover(cc3, st_line5)
+thegodssell = ta.crossunder(cc3, st_line5)
+long = bull_ht or thegodsbuy 
+short = sell_ht or thegodssell
+dcainput=buy_4
+plotshape(showpredictions ? long : na, style=shape.labelup, location=location.belowbar, color=color.new(color.green, 0), size=size.tiny, title='Long Entry', text='L', textcolor=color.new(color.white, 0))
+plotshape(showpredictions ? short : na, style=shape.labeldown, location=location.abovebar, color=color.new(color.red, 0), size=size.tiny, title='Short Entry', text='S', textcolor=color.new(color.white, 0))
+long_shortHR1 = 0
+long_lastHR1 = long and (nz(long_shortHR1[1]) == 0 or nz(long_shortHR1[1]) == -1)
+short_lastHR1 = short and (nz(long_shortHR1[1]) == 0 or nz(long_shortHR1[1]) == 1)
+long_shortHR1 := long_lastHR1 ? 1 : short_lastHR1 ? -1 : long_shortHR1[1]
+longPriceHR1 = ta.valuewhen(long_lastHR1, close, 0)
+shortPriceHR1 = ta.valuewhen(short_lastHR1, close, 0)
+longStop_STOPLOSS_HR1 = longPriceHR1 * (1 - stopPerHR1)
+shortStop_STOPLOSS_HR1 = shortPriceHR1 * (1 + stopPerHR1)
+longTake_TP1_HR1 = longPriceHR1 * (1 + takePerHR1)
+shortTake_TP1_HR1 = shortPriceHR1 * (1 - takePerHR1)
+longBar1HR1 = ta.barssince(long_lastHR1)
+longBar2HR1 = longBar1HR1 >= 1 ? true : false
+shortBar1HR1 = ta.barssince(short_lastHR1)
+shortBar2HR1 = shortBar1HR1 >= 1 ? true : false
+longSLhitHR1 = long_shortHR1 == 1 and longBar2HR1 and low < longStop_STOPLOSS_HR1
+shortSLhitHR1 = long_shortHR1 == -1 and shortBar2HR1 and high > shortStop_STOPLOSS_HR1
+longTPhitHR1 = long_shortHR1 == 1 and longBar2HR1 and high > longTake_TP1_HR1
+shortTPhitHR1 = long_shortHR1 == -1 and shortBar2HR1 and low < shortTake_TP1_HR1
+long_shortHR1 := (long_shortHR1 == 1 or long_shortHR1 == 0) and longBar2HR1 and (longSLhitHR1 or longTPhitHR1) ? 0 : (long_shortHR1 == -1 or long_shortHR1 == 0) and shortBar2HR1 and (shortSLhitHR1 or shortTPhitHR1) ? 0 : long_shortHR1
+long_shortHR2 = 0
+long_lastHR2 = long and (nz(long_shortHR2[1]) == 0 or nz(long_shortHR2[1]) == -1)
+short_lastHR2 = short and (nz(long_shortHR2[1]) == 0 or nz(long_shortHR2[1]) == 1)
+long_shortHR2 := long_lastHR2 ? 1 : short_lastHR2 ? -1 : long_shortHR2[1]
+longPriceHR2 = ta.valuewhen(long_lastHR2, close, 0)
+shortPriceHR2 = ta.valuewhen(short_lastHR2, close, 0)
+longStop_STOPLOSS_HR2 = longPriceHR2 * (1 - stopPerHR1)
+shortStop_STOPLOSS_HR2 = shortPriceHR2 * (1 + stopPerHR1)
+longTake_TP2_HR2 = longPriceHR2 * (1 + takePerHR2)
+shortTake_TP2_HR2 = shortPriceHR2 * (1 - takePerHR2)
+longBar1HR2 = ta.barssince(long_lastHR2)
+longBar2HR2 = longBar1HR2 >= 1 ? true : false
+shortBar1HR2 = ta.barssince(short_lastHR2)
+shortBar2HR2 = shortBar1HR2 >= 1 ? true : false
+longSLhitHR2 = long_shortHR2 == 1 and longBar2HR2 and low < longStop_STOPLOSS_HR2
+longTPhitHR2 = long_shortHR2 == 1 and longBar2HR2 and high > longTake_TP2_HR2
+shortTPhitHR2 = long_shortHR2 == -1 and shortBar2HR2 and low < shortTake_TP2_HR2
+long_shortHR2 := (long_shortHR2 == 1 or long_shortHR2 == 0) and longBar2HR2 and (longSLhitHR2 or longTPhitHR2) ? 0 : (long_shortHR2 == -1 or long_shortHR2 == 0) and shortBar2HR2 and (shortTPhitHR2) ? 0 : long_shortHR2
+long_shortHR3 = 0
+long_lastHR3 = long and (nz(long_shortHR3[1]) == 0 or nz(long_shortHR3[1]) == -1)
+short_lastHR3 = short and (nz(long_shortHR3[1]) == 0 or nz(long_shortHR3[1]) == 1)
+long_shortHR3 := long_lastHR3 ? 1 : short_lastHR3 ? -1 : long_shortHR3[1]
+longPriceHR3 = ta.valuewhen(long_lastHR3, close, 0)
+shortPriceHR3 = ta.valuewhen(short_lastHR3, close, 0)
+longStop_STOPLOSS_HR3 = longPriceHR3 * (1 - stopPerHR1)
+shortStop_STOPLOSS_HR3 = shortPriceHR3 * (1 + stopPerHR1)
+longTake_TP2_HR3 = longPriceHR3 * (1 + takePerHR3)
+shortTake_TP3_HR3 = shortPriceHR3 * (1 - takePerHR3)
+longBar1HR3 = ta.barssince(long_lastHR3)
+longBar2HR3 = longBar1HR3 >= 1 ? true : false
+shortBar1HR3 = ta.barssince(short_lastHR3)
+shortBar2HR3 = shortBar1HR3 >= 1 ? true : false
+longSLhitHR3 = long_shortHR3 == 1 and longBar2HR3 and low < longStop_STOPLOSS_HR3
+longTPhitHR3 = long_shortHR3 == 1 and longBar2HR3 and high > longTake_TP2_HR3
+shortTPhitHR3 = long_shortHR3 == -1 and shortBar2HR3 and low < shortTake_TP3_HR3
+long_shortHR3 := (long_shortHR3 == 1 or long_shortHR3 == 0) and longBar2HR3 and (longSLhitHR3 or longTPhitHR3) ? 0 : (long_shortHR3 == -1 or long_shortHR3 == 0) and shortBar2HR3 and (shortTPhitHR3) ? 0 : long_shortHR3
+long_shortDCA1 = 0
+long_lastDCA1 = dcainput and (nz(long_shortDCA1[1]) == 0 or nz(long_shortDCA1[1]) == -1)
+short_lastDCA1 = short and (nz(long_shortDCA1[1]) == 0 or nz(long_shortDCA1[1]) == 1)
+long_shortDCA1 := long_lastDCA1 ? 1 : short_lastDCA1 ? -1 : long_shortDCA1[1]
+longPriceDCA1 = ta.valuewhen(long_lastDCA1, close, 0)
+shortPriceDCA1 = ta.valuewhen(short_lastDCA1, close, 0)
+longStop_STOPLOSS_DCA1 = longPriceDCA1 * (1 - stopPerDCA1)
+shortStop_STOPLOSS_DCA1 = shortPriceDCA1 * (1 + stopPerDCA1)
+longTake_TP1_DCA1 = longPriceDCA1 * (1 + takePerDCA1)
+shortTake_TP1_DCA1 = shortPriceDCA1 * (1 - takePerDCA1)
+longBar1DCA1 = ta.barssince(long_lastDCA1)
+longBar2DCA1 = longBar1DCA1 >= 1 ? true : false
+shortBar1DCA1 = ta.barssince(short_lastDCA1)
+shortBar2DCA1 = shortBar1DCA1 >= 1 ? true : false
+longSLhitDCA1 = long_shortDCA1 == 1 and longBar2DCA1 and low < longStop_STOPLOSS_DCA1
+longTPhitDCA1 = long_shortDCA1 == 1 and longBar2DCA1 and high > longTake_TP1_DCA1
+long_shortDCA1 := (long_shortDCA1 == 1 or long_shortDCA1 == 0) and longBar2DCA1 and (longSLhitDCA1 or longTPhitDCA1) ? 0 : (long_shortDCA1 == -1 or long_shortDCA1 == 0) and shortBar2DCA1  ? 0 : long_shortDCA1
+long_shortDCA2 = 0
+long_lastDCA2 = dcainput and (nz(long_shortDCA2[1]) == 0 or nz(long_shortDCA2[1]) == -1)
+short_lastDCA2 = short and (nz(long_shortDCA2[1]) == 0 or nz(long_shortDCA2[1]) == 1)
+long_shortDCA2 := long_lastDCA2 ? 1 : short_lastDCA2 ? -1 : long_shortDCA2[1]
+longPriceDCA2 = ta.valuewhen(long_lastDCA2, close, 0)
+shortPriceDCA2 = ta.valuewhen(short_lastDCA2, close, 0)
+longStop_STOPLOSS_DCA2 = longPriceDCA2 * (1 - stopPerDCA1)
+shortStop_STOPLOSS_DCA2 = shortPriceDCA2 * (1 + stopPerDCA1)
+longTake_TP2_DCA2 = longPriceDCA2 * (1 + takePerDCA2)
+longBar1DCA2 = ta.barssince(long_lastDCA2)
+longBar2DCA2 = longBar1DCA2 >= 1 ? true : false
+shortBar1DCA2 = ta.barssince(short_lastDCA2)
+shortBar2DCA2 = shortBar1DCA2 >= 1 ? true : false
+longSLhitDCA2 = long_shortDCA2 == 1 and longBar2DCA2 and low < longStop_STOPLOSS_DCA2
+longTPhitDCA2 = long_shortDCA2 == 1 and longBar2DCA2 and high > longTake_TP2_DCA2
+long_shortDCA2 := (long_shortDCA2 == 1 or long_shortDCA2 == 0) and longBar2DCA2 and (longSLhitDCA2 or longTPhitDCA2) ? 0 : (long_shortDCA2 == -1 or long_shortDCA2 == 0) and shortBar2DCA2  ? 0 : long_shortDCA2
+long_shortDCA3 = 0
+long_lastDCA3 = dcainput and (nz(long_shortDCA3[1]) == 0 or nz(long_shortDCA3[1]) == -1)
+short_lastDCA3 = short and (nz(long_shortDCA3[1]) == 0 or nz(long_shortDCA3[1]) == 1)
+long_shortDCA3 := long_lastDCA3 ? 1 : short_lastDCA3 ? -1 : long_shortDCA3[1]
+longPriceDCA3 = ta.valuewhen(long_lastDCA3, close, 0)
+longStop_STOPLOSS_DCA3 = longPriceDCA3 * (1 - stopPerDCA1)
+longTake_TP2_DCA3 = longPriceDCA3 * (1 + takePerDCA3)
+longBar1DCA3 = ta.barssince(long_lastDCA3)
+longBar2DCA3 = longBar1DCA3 >= 1 ? true : false
+shortBar1DCA3 = ta.barssince(short_lastDCA3)
+shortBar2DCA3 = shortBar1DCA3 >= 1 ? true : false
+longSLhitDCA3 = long_shortDCA3 == 1 and longBar2DCA3 and low < longStop_STOPLOSS_DCA3
+longTPhitDCA3 = long_shortDCA3 == 1 and longBar2DCA3 and high > longTake_TP2_DCA3
+long_shortDCA3 := (long_shortDCA3 == 1 or long_shortDCA3 == 0) and longBar2DCA3 and (longSLhitDCA3 or longTPhitDCA3) ? 0 : (long_shortDCA3 == -1 or long_shortDCA3 == 0) and shortBar2DCA3  ? 0 : long_shortDCA3
+plotshape(showpredictions ? longSLhitHR1 : na, style=shape.labelup, location=location.belowbar, color=color.new(color.gray, 0), size=size.tiny, title='L.SL', text=' L❌', textcolor=color.new(color.white, 0))
+plotshape(showpredictions ? shortSLhitHR1 : na, style=shape.labeldown, location=location.abovebar, color=color.new(color.gray, 0), size=size.tiny, title='S.SL', text=' S❌', textcolor=color.new(color.white, 0))
+plotshape(showpredictions ? longTPhitHR1 : na, style=shape.labeldown, location=location.abovebar, color=color.new(color.purple, 0), size=size.tiny, title='L.TP1', text='LTP1', textcolor=color.new(color.white, 0))
+plotshape(showpredictions ? longTPhitHR2 : na, style=shape.labeldown, location=location.abovebar, color=color.new(color.purple, 0), size=size.tiny, title='L.TP2', text='LTP2', textcolor=color.new(color.white, 0))
+plotshape(showpredictions ? longTPhitHR3 : na, style=shape.labeldown, location=location.abovebar, color=color.new(color.purple, 0), size=size.tiny, title='L.TP3', text='LTP3', textcolor=color.new(color.white, 0))
+plotshape(showpredictions ? shortTPhitHR1 : na, style=shape.labelup, location=location.belowbar, color=color.new(color.yellow, 0), size=size.tiny, title='S.TP1', text='STP1', textcolor=color.new(color.white, 0))
+plotshape(showpredictions ? shortTPhitHR2 : na, style=shape.labelup, location=location.belowbar, color=color.new(color.yellow, 0), size=size.tiny, title='S.TP2', text='STP2', textcolor=color.new(color.white, 0))
+plotshape(showpredictions ? shortTPhitHR3 : na, style=shape.labelup, location=location.belowbar, color=color.new(color.yellow, 0), size=size.tiny, title='S.TP3', text='STP3', textcolor=color.new(color.white, 0))
+plot(long_shortHR1 == 1 ? longStop_STOPLOSS_HR1 : na, style=plot.style_circles,join = true, color=color.new(color.gray, 0), linewidth=3, title='LongSL', display = display.none, editable=true)
+plot(long_shortHR1 == 1 ? longTake_TP1_HR1 : na, style=plot.style_circles,join = true, color=color.new(color.purple, 0), linewidth=1, title='LongTP1', display = display.none, editable=true)
+plot(long_shortHR2 == 1 ? longTake_TP2_HR2 : na, style=plot.style_circles,join = true, color=color.new(color.purple, 0), linewidth=1, title='LongTP2', display = display.none, editable=true)
+plot(long_shortHR3 == 1 ? longTake_TP2_HR3 : na, style=plot.style_circles,join = true, color=color.new(color.purple, 0), linewidth=1, title='LongTP3', display = display.none, editable=true)
+plot(long_shortHR1 == -1 ? shortStop_STOPLOSS_HR1 : na, style=plot.style_circles,join = true, color=color.new(color.gray, 0), linewidth=3, title='ShortSL', display = display.none, editable=true)
+plot(long_shortHR1 == -1 ? shortTake_TP1_HR1 : na, style=plot.style_circles,join = true, color=color.new(color.yellow, 0), linewidth=1, title='ShortTP1', display = display.none, editable=true)
+plot(long_shortHR2 == -1 ? shortTake_TP2_HR2 : na, style=plot.style_circles,join = true, color=color.new(color.yellow, 0), linewidth=1, title='ShortTP2', display = display.none, editable=true)
+plot(long_shortHR3 == -1 ? shortTake_TP3_HR3 : na, style=plot.style_circles,join = true, color=color.new(color.yellow, 0), linewidth=1, title='ShortTP3', display = display.none, editable=true)
+plotshape(showbearvsbull ? longSLhitDCA1 : na, style=shape.labelup, location=location.belowbar, color=color.new(color.gray, 0), size=size.tiny, title='DCAL.SL', text='d❌', textcolor=color.new(color.white, 0))
+plotshape(showbearvsbull ? longTPhitDCA1 : na, style=shape.labeldown, location=location.abovebar, color=color.new(color.blue, 0), size=size.tiny, title='DCAL.TP1', text='dTP1', textcolor=color.new(color.white, 0))
+plotshape(showbearvsbull ? longTPhitDCA2 : na, style=shape.labeldown, location=location.abovebar, color=color.new(color.blue, 0), size=size.tiny, title='DCAL.TP2', text='dTP2', textcolor=color.new(color.white, 0))
+plotshape(showbearvsbull ? longTPhitDCA3 : na, style=shape.labeldown, location=location.abovebar, color=color.new(color.blue, 0), size=size.tiny, title='DCAL.TP3', text='dTP3', textcolor=color.new(color.white, 0))
+plotshape(showbearvsbull ? dcainput : na, style=shape.labelup, location=location.belowbar, color=color.new(color.aqua, 0), size=size.tiny, title='DCA Entry', text='DCA', textcolor=color.new(color.white, 0))
+plot(long_shortDCA1 == 1 ? longStop_STOPLOSS_DCA1 : na, style=plot.style_circles,join = true, color=color.new(color.red, 0), linewidth=3, title='LongSLDCA', display = display.none, editable=true)
+plot(long_shortDCA1 == 1 ? longTake_TP1_DCA1 : na, style=plot.style_circles,join = true, color=color.new(color.blue, 0), linewidth=1, title='LongTP1 DCA', display = display.none, editable=true)
+plot(long_shortDCA2 == 1 ? longTake_TP2_DCA2 : na, style=plot.style_circles,join = true, color=color.new(color.blue, 0), linewidth=1, title='LongTP2 DCA', display = display.none, editable=true)
+plot(long_shortDCA3 == 1 ? longTake_TP2_DCA3 : na, style=plot.style_circles,join = true, color=color.new(color.blue, 0), linewidth=1, title='LongTP3 DCA', display = display.none, editable=true)
+CALLSONCRACK = long or dcainput
+
+alertcondition(long, "=>cornix: LONG call 🟩", message = '🟩 {{ticker}} \n \n exchanges: {{exchange}}, Bittrex, Huobi.pro, Binance \n signal type: Regular (Long) \n amount: 10% \n \n Buy {{close}} \n \n Take=profit Targets: \n 1) {{plot("LongTP1")}} \n 2) {{plot("LongTP2")}} \n \n stop targets: \n 1){{plot("LongSL")}}')
+
+alertcondition(CALLSONCRACK, "=>cornix: LONG + DCA call 🟩", message = '🟩 {{ticker}} \n \n exchanges: {{exchange}}, Bittrex, Huobi.pro, Binance \n signal type: Regular (Long) \n amount: 10% \n \n Buy {{close}} \n \n Take=profit Targets: \n 1) {{plot("LongTP1")}} \n 2) {{plot("LongTP2")}} \n \n stop targets: \n 1){{plot("LongSL")}}')
+
+
+//////////////////////////////////////////////edit//////////////////////////////////////////////edit//////////////////////////////////////////////
+//alertcondition(short, title= "=>cornix: SHORT call ❌", message = '❌ {{ticker}} \n \n exchanges: {{exchange}}, Bittrex, Huobi.pro, Binance \n Signal Type: Regular (Short) \n Amount: 10.0% \n \n Sell {{close}} \n \n Take-Profit Targets: \n 1) {{plot("ShortTP1")}}  \n \n Stop Targets: \n 1){{plot("ShortSL")}}')
+//////////////////////////////////////////////edit//////////////////////////////////////////////edit//////////////////////////////////////////////
+
+alertcondition(short, title= " =>cornix: Leverage 2x SHORT call ❌", message = '❌ Pair :{{ticker}} \n \n exchanges: Binance Futures, Bybit usdt) \n SHORT \n Leverage : 5x \n Entry : {{close}} \n Amount: 2.0% \n \n Target 1 : {{plot("ShortTP1")}} \n \n Stop Loss : {{plot("ShortSL")}}')
+alertcondition(short, title= " =>cornix: Leverage 5x SHORT call ❌", message = '❌ Pair :{{ticker}} \n \n exchanges: Binance Futures, Bybit usdt) \n SHORT \n Leverage : 5x \n Entry : {{close}} \n Amount: 2.0% \n \n Target 1 : {{plot("ShortTP1")}} \n \n Stop Loss : {{plot("ShortSL")}}')
+alertcondition(short, title= " =>cornix: Leverage 7x SHORT call ❌", message = '❌ Pair :{{ticker}} \n \n exchanges: Binance Futures, Bybit usdt) \n SHORT \n Leverage : 5x \n Entry : {{close}} \n Amount: 2.0% \n \n Target 1 : {{plot("ShortTP1")}} \n \n Stop Loss : {{plot("ShortSL")}}')
+alertcondition(short, title= " =>cornix: Leverage 10x SHORT call ❌", message = '❌ Pair :{{ticker}} \n \n exchanges: Binance Futures, Bybit usdt) \n SHORT \n Leverage : 5x \n Entry : {{close}} \n Amount: 2.0% \n \n Target 1 : {{plot("ShortTP1")}} \n \n Stop Loss : {{plot("ShortSL")}}')
+alertcondition(long, title= "LONG call ::simple alert 🟩", message = ' 🟩 enter the market: bull call \n \n🟩 buy {{ticker}}  \n \n exchange: {{exchange}} \n call price {{close}} \n volume at call price {{volume}} \n time of call {{timenow}} \n telegram quick index #{{ticker}}')
+alertcondition(short, title= "SHORT call ::simple alert ❌", message = '❌ bear call \n \n ❌ sell {{ticker}} \n \n exchange: {{exchange}} \n call price {{close}} \n volume at call price {{volume}} \n time of call {{timenow}} \n telegram quick index #{{ticker}}')
+alertcondition(dcainput, title= "DCA entry call 🟦", message = ' 🟦 enter the market: bull call \n \n 🟦 buy {{ticker}}  \n \n exchange: {{exchange}} \n call price {{close}} \n volume at call price {{volume}} \n time of call {{timenow}} \n telegram quick index #{{ticker}}')
+alertcondition(condition=longSLhitHR1, title="Long Stop LOSS Alarm ❌", message='Long SL Hit at ${{plot("L.SL")}}')
+alertcondition(condition=shortSLhitHR1, title="Short Stop LOSS Alarm ❌", message='Short SL Hit at ${{plot("S.SL")}}')
+alertcondition(condition=longSLhitDCA1, title="DCA Stop LOSS Alarm ❌", message='DCA SL Hit at ${{plot("DCAL.TP3")}}')
+alertcondition(condition=longTPhitHR1, title="Long Take Profit 1 Alarm 🟪", message='Long TP.1 Hit at ${{plot("L.TP1")}}')
+alertcondition(condition=longTPhitHR2, title="Long Take Profit 2 Alarm 🟪", message='Long TP.2 Hit at ${{plot("L.TP2")}}')
+alertcondition(condition=longTPhitHR3, title="Long Take Profit 3 Alarm 🟪", message='Long TP.3 Hit at ${{plot("L.TP3")}}')
+alertcondition(condition=shortTPhitHR1, title="Short Take Profit 1 Alarm 🟨", message='Short TP.1 Hit at ${{plot("S.TP1")}}')
+alertcondition(condition=shortTPhitHR2, title="Short Take Profit 2 Alarm 🟨", message='Short TP.2 Hit at ${{plot("S.TP2")}}')
+alertcondition(condition=shortTPhitHR3, title="Short Take Profit 3 Alarm 🟨", message='Short TP.3 Hit at ${{plot("S.TP3")}}')
+alertcondition(condition=longTPhitDCA1, title="DCA Long Take Profit 1 Alarm 🟦", message='DCA Long TP.1 Hit at ${{plot("DCAL.TP1")}}')
+alertcondition(condition=longTPhitDCA2, title="DCA Long Take Profit 2 Alarm 🟦", message='DCA Long TP.2 Hit at ${{plot("DCAL.TP2")}}')
+alertcondition(condition=longTPhitDCA3, title="DCA Long Take Profit 3 Alarm 🟦", message='DCA Long TP.3 Hit at ${{plot("DCAL.TP3")}}')
+
+
+

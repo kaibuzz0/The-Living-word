@@ -1,0 +1,667 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © THE_CHART_GUY
+
+//@version=5
+indicator('APEX Cal.Vision', overlay=true, precision=2, shorttitle='APEX Cal.Vision')
+TA = (true)
+
+GPfibs1 = '===== edit wycloff fib horizonal lines'
+var extendLeft = input(false, 'extend fib lines left to view wycloff', group=GPfibs1)
+var sl1134 = input(true, 'toggle normal wycloff fib market conditions box',group=GPfibs1)
+var sl11344 = input(true, 'toggle euphoric wycloff fib market conditions box',group=GPfibs1)
+var sl1122432 = input(false, 'toggle extereme wycloff fib market conditions box ',group=GPfibs1)
+var sl11224322 = input(false, 'toggle god mode wycloff fib market conditions box ',group=GPfibs1)
+showbearvsbull = input.bool(true, title = "====>🤑 show dca  trading strategy ")
+
+showpredictions = input.bool(true, title = "====>🤑 show Long/Short trading strategy ")
+GPbearvsbull = '===== edit bull versus bear strategy====='
+BLOOD_BATH = input.bool(true, title = "Show buy bars and sell stars(not reliable)")
+
+normalemas = input.bool( false, title="show normal condition emas")
+extremeemas = input.bool( false, title="show median condition emas")
+showxnormalEmasfills = input.bool(false, title = " show extreme market trading emas")
+///////
+toggleCommonTopsBottoms = input.bool(true, title = "Toggle Common Bottom")
+toggleBottomExtremes = input.bool(true, title = "Toggle Bottom Extremes")
+//////
+BollingerBand111 = input.bool(title='----toggle top eliot fractal', defval=true)
+BollingerBand11 = input.bool(title='----toggle top eliot fractal fill', defval=true)
+topband_src777 = (close)
+topband_length11 = (4)
+topband_mult11 = (3)
+topband_offset11 = (0)
+topband_src7777 = (close)
+topband_length111 = (15)
+topband_mult111 = (4)
+topband_offset111 = (0)
+//////
+GPbearvsbull2 = '===== wave channel strategy ====='
+togglewavechannel = input.bool(title='toggle wave channels', defval=true,group=GPbearvsbull2)
+RST = (12)
+RST2 = (10)
+
+bullcolors= "change bullish colors"
+bearcolors= "change bullish colors"
+bullshort = input(color.new(#45ff01, 0),group = bullcolors, inline = "End Period" )
+bulllong = input(color.new(#1bff02, 0),group = bullcolors, inline = "End Period" )
+bullextreme = input(color.new(#bee0f5, 0),group = bullcolors, inline = "End Period" )
+bullbottom = input(color.new(#15ce8a, 0),group = bullcolors, inline = "End Period" )
+bulllineshort = input(color.new(#ffffff, 0),group = bullcolors, inline = "End Period" )
+bulllinelong = input(color.new(#45ff01, 0),group = bullcolors, inline = "End Period" )
+godbull = input(color.new(#45ff01, 0),group = bullcolors, inline = "End Period" )
+factralbull = input(color.new(#45ff01, 0),group = bullcolors, inline = "End Period" )
+
+fractalfill = input(color.new(#ff7c01, 0),group = bearcolors, inline = "Period" )
+bearllong = input(color.new(#ff0101, 0),group = bearcolors, inline = "Period" )
+bearshort = input(color.new(#ffc001, 0),group = bearcolors, inline = "Period" )
+godbear = input(color.new(#ff0101, 0),group = bearcolors, inline = "Period" )
+fractalbear = input(color.new(#ff0101, 0),group = bearcolors, inline = "Period" )
+////
+toggle30min = (true)
+fibsupport1h = (true)
+length30min = (4)
+periods1hr = (1)
+fibsupport30min = (49)
+fibsupport1hr = (1)
+//////
+midrange = (true)
+midrange2 = (20)
+midrange3 = (1)
+midrange4 = (true)
+midrange5 = (49)
+midrange6 = (1)
+////
+
+src61 = close
+nlookback = 20
+scale = 1
+nATR = 14
+dev4_threshold = (9)
+depth = (9)
+//////
+////////
+fiftyfive = ta.ema(close, 55)
+onehundred = ta.ema(close, 100)
+twohundred = ta.ema(close, 200)
+teslacoil = ta.ema(close, 639)
+crossbear = ta.ema(close, 400)
+oneyearaverage = ta.ema(close, 575)
+median = ta.ema(close, 741)
+markentry1 = ta.ema(close, 1900)
+markentry2 = ta.ema(close, 2500)
+marketentry3 = ta.ema(close, 3850)
+legend = ta.ema(close, 4999)
+fear = ta.ema(close, 1400)
+bloodbath = ta.ema(close, 3000)
+/////////////////////////
+////////////////
+source = close
+calcMA(src, len) => ta.wma(src, len)
+priceRange = ta.tr
+calcRangeMA(len) => ta.wma(priceRange, len)
+length43 = 56
+atrlen = 100
+mult1 = 2
+mult2 = 3
+ma = calcMA(source, length43)
+rangema = calcRangeMA(atrlen)
+dn1 = ma - rangema * mult1
+dn2 = ma - rangema * mult2
+length431 = 12
+atrlen11 = 400
+ma11 = calcMA(source, length431)
+rangema11 = calcRangeMA(atrlen11)
+dn211 = ma11 - rangema11 * mult1
+////////////
+topband_basis11 = ta.sma(topband_src777, topband_length11)
+topband_dev11 = topband_mult11 * ta.stdev(topband_src777, topband_length11)
+topband_upper11 = topband_basis11 + topband_dev11
+topband_lower11 = topband_basis11 - topband_dev11
+topband_basis111 = ta.sma(topband_src7777, topband_length111)
+topband_dev111 = topband_mult111 * ta.stdev(topband_src7777, topband_length111)
+topband_upper111 = topband_basis111 + topband_dev111
+topband_lower111 = topband_basis111 - topband_dev111
+/////////
+RSTT = ta.valuewhen(high >= ta.highest(high, RST), high, 0)
+RSTB = ta.valuewhen(low <= ta.lowest(low, RST), low, 0)
+RSTT2 = ta.valuewhen(high >= ta.highest(high, RST2), high, 0)
+RSTB2 = ta.valuewhen(low <= ta.lowest(low, RST2), low, 0)
+///////
+var vall11 = 2.618
+var vall12 = 3.618
+var vall13 = 4.236
+var vall8 = 1.272
+var vall5 = 0.618
+var vall2 = 0.236
+var vall3 = 0.382
+var vall4 = 0.5
+var vall7 = 1
+var vall9 = 1.414
+var vall10 = 1.618
+var vall13224 =6.28
+var vall132245 =9.36
+var vall132246 =12
+var extendRight = (true)
+retracement = (0.618)
+var extending = extend.none
+if extendLeft and extendRight
+    extending := extend.both
+    extending
+if extendLeft and not extendRight
+    extending := extend.left
+    extending
+if not extendLeft and extendRight
+    extending := extend.right
+    extending
+reverse = (false)
+levelsFormat = string('Values')
+var line lineLast = na
+var int iLast = 0
+var int iPrev = 0
+var float pLast = 0
+var isHighLast = false
+pivots(src, length, isHigh) =>
+    l2 = length * 2
+    c3 = nz(src[length])
+    ok = true
+    for i = 0 to l2 by 1
+        if isHigh and src[i] > c3
+            ok := false
+            ok
+        if not isHigh and src[i] < c3
+            ok := false
+            ok
+    if ok
+        [bar_index[length], c3]
+    else
+        [int(na), float(na)]
+[iH, pH] = pivots(high, depth / 2, true)
+[iL, pL] = pivots(low, depth / 2, false)
+calc_dev4(base_price, price) =>
+    100 * (price - base_price) / price
+pivotFound(dev4, isHigh, index, price) =>
+    if isHighLast == isHigh and not na(lineLast)
+        if isHighLast ? price > pLast : price < pLast
+            line.set_xy2(lineLast, index, price)
+            [lineLast, isHighLast]
+        else
+            [line(na), bool(na)]
+    else
+        if math.abs(dev4) > dev4_threshold
+            id = line.new(iLast, pLast, index, price, color=color.gray, width=1, style=line.style_dashed)
+            [id, isHigh]
+        else
+            [line(na), bool(na)]
+if not na(iH)
+    dev4 = calc_dev4(pLast, pH)
+    [id, isHigh] = pivotFound(dev4, true, iH, pH)
+    if not na(id)
+        if id != lineLast
+            line.delete(lineLast)
+        lineLast := id
+        isHighLast := isHigh
+        iPrev := iLast
+        iLast := iH
+        pLast := pH
+        pLast
+else
+    if not na(iL)
+        dev4 = calc_dev4(pLast, pL)
+        [id, isHigh] = pivotFound(dev4, false, iL, pL)
+        if not na(id)
+            if id != lineLast
+                line.delete(lineLast)
+            lineLast := id
+            isHighLast := isHigh
+            iPrev := iLast
+            iLast := iL
+            pLast := pL
+            pLast
+_draw_line(price, col) =>
+    var id = line.new(iLast, price, bar_index, price, color=col, width=1, extend=extending)
+    if not na(lineLast)
+        line.set_xy1(id, line.get_x1(lineLast), price)
+        line.set_xy2(id, line.get_x2(lineLast), price)
+_draw_retracement(startPrice, endPrice) =>
+    iHL = startPrice > endPrice
+    diff1 = (iHL ? -1 : 1) * math.abs(startPrice - endPrice)
+    if sl1134
+        l2 = startPrice + diff1 * vall2
+        _draw_line(l2, #5C068C)
+    if sl1134
+        l3 = startPrice + diff1 * vall3
+        _draw_line(l3, #FFD900)
+    if sl1134
+        l4 = startPrice + diff1 * vall4
+        _draw_line(l4, #00FF00)
+    if sl1134
+        l5 = startPrice + diff1 * vall5
+        _draw_line(l5, #FFD900)
+    if sl1134
+        l7 = startPrice + diff1 * vall7
+        _draw_line(l7, #DDE5ED)
+    if sl11344
+        l8 = startPrice + diff1 * vall8
+        _draw_line(l8, #003594)
+    if sl11344
+        l9 = startPrice + diff1 * vall9
+        _draw_line(l9, #C800A1)
+    if sl11344
+        l10 = startPrice + diff1 * vall10
+        _draw_line(l10, #05C3DE)
+    if sl1122432
+        l11 = startPrice + diff1 * vall11
+        _draw_line(l11, #ff9f1a)
+    if sl1122432
+        l12 = startPrice + diff1 * vall12
+        _draw_line(l12, #772583)
+    if sl1122432
+        l13 = startPrice + diff1 * vall13
+        _draw_line(l13, #D50000)
+    if sl11224322
+        l1323 = startPrice + diff1 * vall13224
+        _draw_line(l1323, #201547)
+    if sl11224322
+        l13235 = startPrice + diff1 * vall132245
+        _draw_line(l13235, #685BC7)
+    if sl11224322
+        l13235 = startPrice + diff1 * vall132246
+        _draw_line(l13235, #250E62)
+    diff1
+p1 = reverse ? pLast : line.get_y1(lineLast)
+p2 = reverse ? line.get_y1(lineLast) : pLast
+diff = _draw_retracement(p1, p2)
+reverse2 = (true)
+var line lineLast2 = na
+var int iLast2 = 0
+var int iPrev2 = 0
+var float pLast2 = 0
+var isHighLast2 = false
+pivots2(src, length, isHigh) =>
+    l2 = length * 2
+    cc333 = nz(src[length])
+    ok = true
+    for i = 0 to l2 by 1
+        if isHigh and src[i] > cc333
+            ok := false
+            ok
+        if not isHigh and src[i] < cc333
+            ok := false
+            ok
+    if ok
+        [bar_index[length], cc333]
+    else
+        [int(na), float(na)]
+[iH2, pH2] = pivots2(high, depth / 2, true)
+[iL2, pL2] = pivots2(low, depth / 2, false)
+pivotFound2(dev4, isHigh, index, price) =>
+    if isHighLast2 == isHigh and not na(lineLast2)
+        if isHighLast2 ? price > pLast2 : price < pLast2
+            line.set_xy2(lineLast2, index, price)
+            [lineLast2, isHighLast2]
+        else
+            [line(na), bool(na)]
+    else
+        if math.abs(dev4) > dev4_threshold
+            id = line.new(iLast2, pLast2, index, price, color=color.gray, width=1, style=line.style_dashed)
+            [id, isHigh]
+        else
+            [line(na), bool(na)]
+if not na(iH2)
+    dev4 = calc_dev4(pLast2, pH2)
+    [id2, isHigh2] = pivotFound2(dev4, true, iH2, pH2)
+    if not na(id2)
+        if id2 != lineLast2
+            line.delete(lineLast2)
+        lineLast2 := id2
+        isHighLast2 := isHigh2
+        iPrev2 := iLast2
+        iLast2 := iH2
+        pLast2 := pH2
+        pLast2
+else
+    if not na(iL2)
+        dev4 = calc_dev4(pLast2, pL2)
+        [id2, isHigh2] = pivotFound2(dev4, false, iL2, pL2)
+        if not na(id2)
+            if id2 != lineLast2
+                line.delete(lineLast2)
+            lineLast2 := id2
+            isHighLast2 := isHigh2
+            iPrev2 := iLast2
+            iLast2 := iL2
+            pLast2 := pL2
+            pLast2
+_draw_line2(price, col) =>
+    var id2 = line.new(iLast2, price, bar_index, price, color=col, width=1, extend=extending)
+    if not na(lineLast2)
+        line.set_xy1(id2, line.get_x1(lineLast2), price)
+        line.set_xy2(id2, line.get_x2(lineLast2), price)
+_draw_retracement2(startPrice, endPrice) =>
+    iHL = startPrice > endPrice
+    diff2 = (iHL ? -1 : 1) * math.abs(startPrice - endPrice)
+    if sl1134
+        l22 = startPrice + diff2 * vall2
+        _draw_line2(l22, #5C068C)
+    if sl1134
+        l32 = startPrice + diff2 * vall3
+        _draw_line2(l32, #FFD900)
+    if sl1134
+        l42 = startPrice + diff2 * vall4
+        _draw_line2(l42, #00FF00)
+    if sl1134
+        l52 = startPrice + diff2 * vall5
+        _draw_line2(l52, #FFD900)
+    if sl1134
+        l72 = startPrice + diff2 * vall7
+        _draw_line2(l72,#DDE5ED)
+    if sl11344
+        l82 = startPrice + diff2 * vall8
+        _draw_line2(l82, #003594)
+    if sl11344
+        l92 = startPrice + diff2 * vall9
+        _draw_line2(l92, #C800A1)
+    if sl11344
+        l102 = startPrice + diff2 * vall10
+        _draw_line2(l102, #05C3DE)
+    if sl1122432
+        l112 = startPrice + diff2 * vall11
+        _draw_line2(l112,#ff9f1a)
+    if sl1122432
+        l122 = startPrice + diff2 * vall12
+        _draw_line2(l122, #772583)
+    if sl1122432
+        l132 = startPrice + diff2 * vall13
+        _draw_line2(l132, #D50000)
+    if sl11224322
+        l1323 = startPrice + diff2 * vall13224
+        _draw_line2(l1323, #280071)
+    if sl11224322
+        l1323555 = startPrice + diff2 * vall132245
+        _draw_line(l1323555, #685BC7)
+    if sl11224322
+        l13235555 = startPrice + diff2 * vall132246
+        _draw_line(l13235555, #280071)
+    diff2
+p12 = reverse2 ? pLast2 : line.get_y1(lineLast2)
+p22 = reverse2 ? line.get_y1(lineLast2) : pLast2
+diff2 = _draw_retracement2(p12, p22)
+src5 = (close)
+tf = (1440)
+len5 = timeframe.isintraday and timeframe.multiplier >= 1 ? tf / timeframe.multiplier * 7 : timeframe.isintraday and timeframe.multiplier < 60 ? 60 / timeframe.multiplier * 24 * 7 : 7
+ma32 = ta.ema(src5 * volume, len5) / ta.ema(volume, len5)
+src1 = ma32
+p(src1, len5) =>
+    n = 0.0
+    s = 0.0
+    for i = 0 to len5 - 1 by 1
+        w = (len5 - i) * len5
+        n += w
+        s += src5[i] * w
+        s
+    s / n
+hm = 2.0 * p(src1, math.floor(len5 / 2)) - p(src1, len5)
+vhma = p(hm, math.floor(math.sqrt(len5)))
+lineColor23 = vhma > vhma[1] ? color.lime : color.purple
+b2 = timeframe.isintraday and timeframe.multiplier >= 1 ? 60 / timeframe.multiplier * 7 : timeframe.isintraday and timeframe.multiplier < 60 ? 60 / timeframe.multiplier * 24 * 7 : 7
+res55 = ('D')
+oo = request.security(syminfo.tickerid, res55, open, barmerge.gaps_off, barmerge.lookahead_on)
+cc3 = request.security(syminfo.tickerid, res55, close, barmerge.gaps_off, barmerge.lookahead_on)
+hzz = request.security(syminfo.tickerid, res55, high, barmerge.gaps_off, barmerge.lookahead_on)
+ll = request.security(syminfo.tickerid, res55, low, barmerge.gaps_off, barmerge.lookahead_on)
+st_mult3 = (0.05)
+st_periocommonb1 = (4)
+up_lev5 = ll - st_mult3 * ta.atr(st_periocommonb1)
+dn_lev5 = hzz + st_mult3 * ta.atr(st_periocommonb1)
+up_trend5 = 0.0
+up_trend5 := cc3[1] > up_trend5[1] ? math.max(up_lev5, up_trend5[1]) : up_lev5
+down_trend5 = 0.0
+down_trend5 := cc3[1] < down_trend5[1] ? math.min(dn_lev5, down_trend5[1]) : dn_lev5
+trend5 = 0
+trend5 := cc3 > down_trend5[1] ? 1 : cc3 < up_trend5[1] ? -1 : nz(trend5[1], 1)
+st_line5 = trend5 == 1 ? up_trend5 : down_trend5
+thegodsbuy = ta.crossover(cc3, st_line5)
+thegodssell = ta.crossunder(cc3, st_line5)
+//////////////
+src = hlc3
+basis30min = ta.vwma(src, length30min)
+avg1hr = math.avg(ta.sma(high, periods1hr) + 2.5 * (ta.sma(high, periods1hr) - ta.sma(low, periods1hr)), ta.sma(low, periods1hr) - 2.5 * (ta.sma(high, periods1hr) - ta.sma(low, periods1hr)))
+conditionFill = toggle30min and basis30min > avg1hr
+srcfibsupport1h = hlc3
+thebasis30min = ta.vwma(srcfibsupport1h, fibsupport30min)
+fibsupportavg1hr = math.avg(ta.sma(high, fibsupport1hr) + 2.5 * (ta.sma(high, fibsupport1hr) - ta.sma(low, fibsupport1hr)), ta.sma(low, fibsupport1hr) - 2.5 * (ta.sma(high, fibsupport1hr) - ta.sma(low, fibsupport1hr)))
+fibsupportfill1h = fibsupport1h and thebasis30min > fibsupportavg1hr
+///////////////////
+//////////////
+srcff = hlc3
+midrange6j = ta.vwma(srcff, midrange2)
+midrange7 = math.avg(ta.sma(high, midrange3) + 2.5 * (ta.sma(high, midrange3) - ta.sma(low, midrange3)), ta.sma(low, midrange3) - 2.5 * (ta.sma(high, midrange3) - ta.sma(low, midrange3)))
+midrange8 = midrange and midrange6j > midrange7
+midranger = midrange8 ? color.new(#f00404, 0) : color.new(#03ffcd, 0)
+midranget = hlc3
+midrangef = ta.vwma(midranget, midrange5)
+midranged = math.avg(ta.sma(high, midrange6) + 2.5 * (ta.sma(high, midrange6) - ta.sma(low, midrange6)), ta.sma(low, midrange6) - 2.5 * (ta.sma(high, midrange6) - ta.sma(low, midrange6)))
+midrangedd = midrange4 and midrangef > midranged
+midrangeddd = midrangedd ? color.new(#ff8307, 100) : color.new(#18ff03, 85)
+//////////////////
+///////////////
+plot(normalemas ? fiftyfive: na, color=color.new(#800080, 0), title="55 ema", editable=true)
+plot(normalemas ? onehundred: na, color=color.new(#663399, 0), title="100 ema", editable=true)
+plot(normalemas ? twohundred: na, color=color.new(#c71585, 0), title="200 ema", editable=true, linewidth= 3)
+plot(showxnormalEmasfills ? teslacoil : na, title='tesla coil ema', color=color.new(#9D81BA, 0), linewidth= 3, editable=true)
+plot(normalemas ? crossbear : na, title='CROSS=BEAR?', color=color.new(#d3d3d3, 0), linewidth=1, editable=true)
+plot(showxnormalEmasfills ? oneyearaverage : na, title='1.5 YR AVG', color=color.new(#966FD6, 0), linewidth=1, editable=true)
+plot(showxnormalEmasfills ? median : na, title='MEDIAN ema', color=color.new(#00FFEF, 0), linewidth=1, editable=true)
+plot(extremeemas ? fear : na, title='FEAR HAS ENTERED', color=color.new(#F94D00, 0), linewidth=2, editable=true)
+plot(extremeemas ? markentry1 : na, title='MARKET ENTRY TARGET 1', color=color.new(#00FF00, 0), linewidth=1, editable=true)
+plot(extremeemas ? markentry2: na, title='MARKET ENTRY TARGET 2', color=color.new(#00FF00, 0), linewidth=1, editable=true)
+plot(extremeemas ? bloodbath : na, title='BLOOD BATH ema', color=color.new(#D50000, 0), linewidth=2, editable=true)
+plot(extremeemas ? legend : na, title='LEGENDS ARE MADE HERE ', color=color.new(#fffb00, 0), linewidth=4, editable=true)
+////////
+
+
+
+lineColor = conditionFill ? color.new(bearllong, 0) : color.new(bullextreme, 100)
+lineColorfibsupport = fibsupportfill1h ? color.new(bearllong, 0) : color.new(bullshort, 0)
+lineColorfibsupport2 = fibsupportfill1h ? color.new(bearllong, 0) : color.new(bulllong, 0)
+lineColorfibsupport3 = fibsupportfill1h ? color.new(bulllineshort, 0) : color.new(bulllineshort, 0)
+
+
+fillColor = conditionFill and fibsupportfill1h ? color.new(bearshort, 60) :  color.new(bullextreme, 100)
+lineColor2 = conditionFill ? color.new(bearllong, 49) : color.new(bullshort, 43)
+lineColor233 = vhma > vhma[1] ? color.rgb(243, 248, 249, 85) : color.rgb(255, 0, 0, 60)
+
+boll1 = plot(BollingerBand11 == true ? topband_upper11 : na, ' fractal 1', color=color.new(bearshort, 52), offset=topband_offset11, linewidth=2, editable=true)
+boll2 = plot(BollingerBand111 == true ? topband_upper111 : na, 'fractal 2', color=color.new(bearllong, 0), offset=topband_offset111, linewidth=2, editable=true)
+
+// Cross conditions
+crossUnder = ta.crossunder(topband_upper11, topband_upper111)
+crossOver = ta.crossover(topband_upper11, topband_upper111)
+//plotshape( crossOver, style=shape.arrowup, location=location.belowbar, color=color.new(#62ff00, 0), size=size.normal, title='Long Entry')
+//plotshape(crossUnder, style=shape.arrowdown, location=location.abovebar, color=color.new(#fd0202, 0), size=size.normal, title='Short Entry')
+
+// Dynamic fill based on cross conditions
+fill(boll1, boll2, color=crossUnder ? color.new(fractalbear, 0) : crossOver ? color.new(factralbull, 0) : na)
+
+
+
+commonb1 = plot(toggleCommonTopsBottoms ? dn1 : na, color=color.new(bullbottom, 85), title='Common Bottom')
+commonb2 = plot(toggleCommonTopsBottoms ? dn2 : na, color=color.new(bullbottom, 70), title='Common Bottom', linewidth=3)
+extremesb = plot(toggleBottomExtremes ? dn211 : na, color=color.new(bullextreme, 70), title='Extreme Sell Pressure Bottom', linewidth=3)
+
+///////
+shortermresistance = plot(basis30min, color=lineColor, linewidth=3, title="shorterm resistance 1")
+suport2 = plot(thebasis30min, color=lineColorfibsupport, linewidth=2, title="support 2")
+shortermtend = plot(vhma, title='the gods trend', color=lineColor23, linewidth=3, editable=true)
+sapport3 = plot(midrange6j, color=lineColorfibsupport3, linewidth=1, title=" Support 3")
+fill(commonb2, commonb1, color=color.new(bullbottom, 80), title ='Fill Common Bottom')
+fill(extremesb, commonb2, color=color.new(bullextreme, 90), title ='Fill Extreme Common Bottom')
+
+fill(suport2, sapport3, color=midrangeddd, title="Fill Between Support Lines")
+
+fill(boll2, boll1, color=color.new(bearshort, 86), editable=true, title= 'fill eliot wave tops')
+fill(shortermresistance, shortermtend, color=lineColor2, title="Fill 1")
+
+
+// Fills
+
+
+RT2 = plot(togglewavechannel ? RSTT : na, color=RSTT != RSTT[1] ? na : color.red, linewidth=4, offset=+0, title='wave resistance', editable =true)
+RB2 = plot(togglewavechannel ? RSTB2 : na, color=RSTB2 != RSTB2[1] ? na : color.lime, linewidth=4, offset=0, title='wave support', editable =true)
+
+
+osLevel = -53
+obLevel = 53
+wtChannelLen = 9
+wtAverageLen = 13
+wtMALen = 3
+wtMASource = ohlc4
+
+
+colorPink = #ff00f0
+colorBluelight = #31c0ff
+
+// Function Definitions
+f_wavetrend(src, chlen, avg, malen, tf) =>
+    tfsrc = request.security(syminfo.tickerid, tf, src)
+    esa = ta.ema(tfsrc, chlen)
+    de = ta.ema(math.abs(tfsrc - esa), chlen)
+    ci = (tfsrc - esa) / (0.015 * de)
+    wt1 = request.security(syminfo.tickerid, tf, ta.ema(ci, avg))
+    wt2 = request.security(syminfo.tickerid, tf, ta.sma(wt1, malen))
+    wtOversold = wt2 <= osLevel
+    wtOverbought = wt2 >= obLevel
+    wtCross = ta.cross(wt1, wt2)
+    wtCrossUp = wt2 - wt1 <= 0
+    wtCrossDown = wt2 - wt1 >= 0
+    [wt1, wt2, wtOversold, wtOverbought, wtCross, wtCrossUp, wtCrossDown]
+
+
+
+// Calculations
+[wt1, wt2, wtOversold, wtOverbought, wtCross, wtCrossUp, wtCrossDown] = f_wavetrend(wtMASource, wtChannelLen, wtAverageLen, wtMALen, timeframe.period)
+
+// Signals
+buySignal45 = wtCross and wtCrossUp and wtOversold
+sellSignal45 = wtCross and wtCrossDown and wtOverbought
+sellSignalDiv_color = colorPink
+// Plotting
+plotchar(BLOOD_BATH and buySignal45 ? -107 : na, title='Buy 1', char='*', color=color.new(colorBluelight, 50), location=location.belowbar, size=size.tiny, editable=true)
+plotchar(BLOOD_BATH and sellSignal45 ? 105 : na, title='Sell 1', char='*', color=color.new(colorPink, 50), location=location.abovebar, size=size.tiny, editable=true)
+
+
+on_symb = (true)
+A6 = (true)
+min_level = (36)
+length = (10)
+mult =(40)
+maj_qual = (6)
+maj_len = (30)
+min_qual = (5)
+min_len = (5)
+maj = true
+min = true
+buy_4 = 0.0
+upper_s = math.sum(volume * (ta.change(hlc3) <= 0 ? 0 : hlc3), 14)
+lower_s = math.sum(volume * (ta.change(hlc3) >= 0 ? 0 : hlc3), 14)
+xmf = 100.0 - 100.0 / (1.0 + upper_s / lower_s)
+basis = ta.sma(ohlc4, 25)
+dev = mult * ta.stdev(ohlc4, 25)
+upper = basis + dev
+lower = basis - dev
+OB1 = (upper + lower) / 2.0
+OB2 = upper - lower
+BollOsc = (ohlc4 - OB1) / OB2 * 100
+xrsi = ta.rsi(ohlc4, 14)
+calc_stoch(src38, length, smoothFastD) =>
+    ll3 = ta.lowest(low, length)
+    hh = ta.highest(high, length)
+    k = 100 * (src38 - ll3) / (hh - ll3)
+    ta.sma(k, smoothFastD)
+stoc = calc_stoch(ohlc4, 21, 3)
+trend23 = (xrsi + xmf + BollOsc + stoc / 3) / 2
+x = bar_index
+y = trend23
+x_ = ta.ema(x, length)
+y_ = ta.ema(y, length)
+mx = ta.stdev(x, length)
+my = ta.stdev(y, length)
+c23 = ta.correlation(x, y, length)
+slope = c23 * (my / mx)
+inter = y_ - slope * x_
+reg_trend23 = x * slope + inter
+lele(qual, len) =>
+    bindex = 0.0
+    sindex = 0.0
+    bindex := nz(bindex[1], 0)
+    sindex := nz(sindex[1], 0)
+    ret = 0
+    if close > close[4]
+        bindex += 1
+        bindex
+    if close < close[4]
+        sindex += 1
+        sindex
+    if bindex > qual and close < open and high >= ta.highest(high, len)
+        bindex := 0
+        ret := -1
+        ret
+    if sindex > qual and close > open and low <= ta.lowest(low, len)
+        sindex := 0
+        ret := 1
+        ret
+    return_1 = ret
+    return_1
+major = lele(maj_qual, maj_len)
+minor = lele(min_qual, min_len)
+a = 1
+cc = 10
+xATR = ta.atr(cc)
+nLoss = a * xATR
+src38 = close
+xATRTrailingStop = 0.0
+iff_2 = src38 > nz(xATRTrailingStop[1], 0) ? src38 - nLoss : src38 + nLoss
+iff_3 = src38 < nz(xATRTrailingStop[1], 0) and src38[1] < nz(xATRTrailingStop[1], 0) ? math.min(nz(xATRTrailingStop[1]), src38 + nLoss) : iff_2
+xATRTrailingStop := src38 > nz(xATRTrailingStop[1], 0) and src38[1] > nz(xATRTrailingStop[1], 0) ? math.max(nz(xATRTrailingStop[1]), src38 - nLoss) : iff_3
+pos = 0
+iff_4 = src38[1] > nz(xATRTrailingStop[1], 0) and src38 < nz(xATRTrailingStop[1], 0) ? -1 : nz(pos[1], 0)
+pos := src38[1] < nz(xATRTrailingStop[1], 0) and src38 > nz(xATRTrailingStop[1], 0) ? 1 : iff_4
+xcolor = pos == -1 ? color.red : pos == 1 ? color.green : color.blue
+ema = ta.ema(src38, 1)
+above = ta.crossover(ema, xATRTrailingStop)
+below = ta.crossover(xATRTrailingStop, ema)
+buy_a = src38 > xATRTrailingStop and above
+if ta.crossunder(reg_trend23, trend23) and reg_trend23 <= min_level and trend23 <= min_level and A6
+    buy_4 := 1
+    buy_4
+res5 = input.timeframe('2D', title = 'adjust bull vs bear calls', group= GPbearvsbull )
+o = request.security(syminfo.tickerid, res5, open, barmerge.gaps_off, barmerge.lookahead_on)
+c = request.security(syminfo.tickerid, res5, close, barmerge.gaps_off, barmerge.lookahead_on)
+hz = request.security(syminfo.tickerid, res5, high, barmerge.gaps_off, barmerge.lookahead_on)
+l = request.security(syminfo.tickerid, res5, low, barmerge.gaps_off, barmerge.lookahead_on)
+st_mult = (0)
+st_period =(500)
+up_lev = l - st_mult * ta.atr(st_period)
+dn_lev = hz + st_mult * ta.atr(st_period)
+up_trend = 0.0
+up_trend := c[1] > up_trend[1] ? math.max(up_lev, up_trend[1]) : up_lev
+down_trend = 0.0
+down_trend := c[1] < down_trend[1] ? math.min(dn_lev, down_trend[1]) : dn_lev
+trend = 0
+trend := c > down_trend[1] ? 1 : c < up_trend[1] ? -1 : nz(trend[1], 1)
+st_line = trend == 1 ? up_trend : down_trend
+buy44 = ta.crossover(c, st_line)
+sell44 = ta.crossunder(c, st_line)
+bull_ht = buy44
+sell_ht = sell44
+
+
+long = bull_ht or thegodsbuy 
+short = sell_ht or thegodssell
+dcainput=buy_4
+plotshape(showpredictions ? long : na, style=shape.triangleup, location=location.belowbar, color=color.new(color.green, 0), size=size.tiny, title='Long Entry')
+plotshape(showpredictions ? short : na, style=shape.triangledown, location=location.abovebar, color=color.new(color.red, 0), size=size.tiny, title='Short Entry')
+
+plotshape(showbearvsbull ? dcainput : na, style=shape.square, location=location.belowbar, color=color.new(color.aqua, 0), size=size.tiny, title='DCA Entry')
+
+

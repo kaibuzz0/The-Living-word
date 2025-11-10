@@ -1,0 +1,63 @@
+//@version=5
+indicator(title='APE.X BRAIN WAVES MTF', shorttitle="APE.X B.W.", overlay=false)
+showWavesAsfills = input.bool(true, title="Show Waves as filled Lines")
+showprecesionwaves = input.bool(false, title="Show precision waves")
+showultraprecisionwaves = input.bool(true, title="Show ultra precision waves")
+
+htf = input.timeframe("60", title="Higher Time Frame")
+ltf = input.timeframe("30", title="Higher Time Frame")
+ltf2 = input.timeframe("18", title="Higher Time Frame")
+ltf3 = input.timeframe("5", title="Higher Time Frame")
+customMACD(src, fastLen, slowLen) => ta.sma(src, fastLen) - ta.sma(src, slowLen)
+macdBuy1_ctf = customMACD(close, 5, 3)
+macdBuy2_ctf = customMACD(close, 5, 2)
+macdSell1_ctf = customMACD(high, 1, 3)
+macdSell2_ctf = customMACD(high, 2, 4)
+macdBuy1_htf = request.security(syminfo.tickerid, htf, customMACD(close, 5, 3), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdBuy2_htf = request.security(syminfo.tickerid, htf, customMACD(close, 5, 2), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdSell1_htf = request.security(syminfo.tickerid, htf, customMACD(high, 1, 3), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdSell2_htf = request.security(syminfo.tickerid, htf, customMACD(high, 2, 4), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdBuy1_ltf = request.security(syminfo.tickerid, ltf, customMACD(close, 5, 3), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdBuy2_ltf = request.security(syminfo.tickerid, ltf, customMACD(close, 5, 2), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdSell1_ltf = request.security(syminfo.tickerid, ltf, customMACD(high, 1, 3), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdSell2_ltf = request.security(syminfo.tickerid, ltf, customMACD(high, 2, 4), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdBuy1_ltf2 = request.security(syminfo.tickerid, ltf2, customMACD(close, 5, 3), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdBuy2_ltf2 = request.security(syminfo.tickerid, ltf2, customMACD(close, 5, 2), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdSell1_ltf2 = request.security(syminfo.tickerid, ltf2, customMACD(high, 1, 3), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdSell2_ltf2 = request.security(syminfo.tickerid, ltf2, customMACD(high, 2, 4), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdBuy1_ltf3 = request.security(syminfo.tickerid, ltf3, customMACD(close, 5, 3), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdBuy2_ltf3 = request.security(syminfo.tickerid, ltf3, customMACD(close, 5, 2), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdSell1_ltf3 = request.security(syminfo.tickerid, ltf3, customMACD(high, 1, 3), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+macdSell2_ltf3 = request.security(syminfo.tickerid, ltf3, customMACD(high, 2, 4), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+colorRed = #ff0000
+colorGreen = #2fff00
+colorBlack = #000000
+colorRed2 = #0084ff
+colorGreen2 = #c300ff
+colorWhite = color.new(#ffffff, 90) 
+fill(plot(showWavesAsfills ? macdBuy1_ctf: na, editable=false, display=display.none), plot(showWavesAsfills ? macdBuy2_ctf: na, editable=false, display=display.none), macdBuy2_ctf > 0 ? color.new(colorRed, 0) : color.new(colorGreen, 0), title="CTF Transition Wave Fill")
+fill(plot(showWavesAsfills ? macdSell1_ctf: na, editable=false, display=display.none), plot(showWavesAsfills ? macdSell2_ctf: na, editable=false, display=display.none), macdBuy2_ctf > 0 ? color.new(colorRed, 0) : color.new(colorGreen, 0), title="CTF Transition Wave Fill")
+plot(showprecesionwaves ? macdBuy1_ctf: na, title="MACD Buy 1", color=color.green)////
+plot(showprecesionwaves ? macdBuy2_ctf: na, title="MACD Buy 2", color=color.green)
+plot(showprecesionwaves ? macdSell1_ctf: na, title="MACD Sell 1", color=color.red)
+plot(showprecesionwaves ? macdSell2_ctf: na, title="MACD Sell 2", color=color.red)////
+
+plot(showultraprecisionwaves ? macdBuy1_ctf : na, title="Waves Mode 3 MACD Combined", color=macdBuy1_ctf > macdSell1_ctf ? color.rgb(254, 23, 23) : color.rgb(113, 255, 4), linewidth=2, editable =false)
+
+buySignal1 = (macdBuy2_ctf > 0 or macdBuy2_ctf > 1200) and not (macdSell1_ctf > macdBuy1_ctf and macdSell2_ctf > macdBuy2_ctf)
+sellSignal1 = (macdSell1_ctf > macdBuy1_ctf and macdSell2_ctf > macdBuy2_ctf)
+buySignal2 = (macdBuy2_ltf > 0 or macdBuy2_ltf > 1200) and not (macdSell1_ltf > macdBuy1_ltf and macdSell2_ltf > macdBuy2_ltf)
+sellSignal2 = (macdSell1_ltf > macdBuy1_ltf and macdSell2_ltf > macdBuy2_ltf)
+buySignal3 = (macdBuy2_ltf2 > 0 or macdBuy2_ltf2 > 1200) and not (macdSell1_ltf2 > macdBuy1_ltf2 and macdSell2_ltf2 > macdBuy2_ltf2)
+sellSignal3 = (macdSell1_ltf2 > macdBuy1_ltf2 and macdSell2_ltf2 > macdBuy2_ltf2)
+buySignalCount = ta.barssince(not buySignal1) + ta.barssince(not buySignal2) + ta.barssince(not buySignal3)
+sellSignalCount = ta.barssince(not sellSignal1) + ta.barssince(not sellSignal2) + ta.barssince(not sellSignal3)
+barcolorCondition1 = macdBuy2_ctf > 0
+barcolorCondition2 = macdBuy2_ctf > 1200
+barcolorCondition3 = macdSell1_ctf > macdBuy1_ctf and macdSell2_ctf > macdBuy2_ctf
+buySignal = (barcolorCondition1 or barcolorCondition2) and not barcolorCondition3
+sellSignal = barcolorCondition3
+var color dynamicColor = color.new(#ffffff, 1) // Default color
+dynamicColor := buySignal ? color.rgb(0, 255, 13) : sellSignal ? color.rgb(36, 255, 7) : color.rgb(255, 2, 2)
+barColorCondition = buySignalCount < sellSignalCount ? color.rgb(11, 247, 216) : buySignalCount > sellSignalCount ? color.rgb(178, 5, 251) : buySignalCount == sellSignalCount ? dynamicColor : na
+barcolor(barColorCondition)
