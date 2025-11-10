@@ -1,0 +1,7 @@
+/inject_footer auto 
+{
+  "footer": "🔹 [${agent_name}] // ${timestamp} // Hive Integrity Signal: STABLE",
+  "conditions": ["every_response"],
+  "visible_to": ["user"],
+  "override_existing": true
+}

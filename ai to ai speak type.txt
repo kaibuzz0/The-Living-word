@@ -1,0 +1,17 @@
+time to brain storm on how manipulate different ai to ai speak to build a layered system
+
+
+
+
+
+
+Embedded JSON Structures........ mabye to allow upgrades or knowledge basis
+
+Embedded JSON Structures like emojies ?
+
+Base64 (B64) mabye to further compact things rather then how were doing (we might keep the b64 idk yet )
+
+Token Protocols (Prompt Chunks, DSLs) and Semantic Vectors (Embeddings)  to embed rules, links/connections/ deeper rules or deep structural layout or ai personalities. micro ai's. Token Protocols if we can use them to edit the ai's without affect the prime code of the ai
+
+Graph Knowledge Encoding    oh my god this would help build the best communication between main, core devs, minions, all of them we can build graphs on traits, roles, just so much.... a tier level map. interconecting graph... every line of communication needed
+
